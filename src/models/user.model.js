@@ -40,6 +40,11 @@ const userSchema = new Schema(
       type: String,
       enum: ["user", "admin"],
     },
+
+    status: {
+      type: String,
+      enum: ["Block", "Unblock"],
+    },
   },
   { timestamps: true }
 );

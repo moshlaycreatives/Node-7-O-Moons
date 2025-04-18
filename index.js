@@ -5,6 +5,7 @@ import fs from "fs";
 
 import { app } from "./src/app.js";
 import { connectDb } from "./src/config/db.config.js";
+import { createAdmin } from "./src/utils/createAdmin.util.js";
 
 // ============================================
 // 1. Dotenv configuration
@@ -47,6 +48,7 @@ const PORT = process.env.PORT || 3000;
         console.info(`==> 🌎 Go to http://localhost:${PORT}`);
       }
     });
+    createAdmin();
   } catch (error) {
     console.error("An error occurred while running server", error);
   }

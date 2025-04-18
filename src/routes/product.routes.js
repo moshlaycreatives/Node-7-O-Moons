@@ -2,10 +2,9 @@ import { Router } from "express";
 
 import {
   trimBodyObject,
-  requiredFields,
   adminAuth,
   loginAuth,
-  upload,
+  productUpload,
 } from "../middlewares/index.js";
 
 import {
@@ -23,14 +22,7 @@ const productRouter = Router();
 // ==============================================
 productRouter
   .route("/")
-  .post(
-    loginAuth,
-    adminAuth,
-    upload.single("image"),
-    trimBodyObject,
-    requiredFields(["name"]),
-    addProduct
-  )
+  .post(loginAuth, adminAuth, productUpload, trimBodyObject, addProduct)
   .get(loginAuth, getAllProducts);
 
 // ==============================================
@@ -39,14 +31,7 @@ productRouter
 productRouter
   .route("/:id")
   .get(loginAuth, getProduct)
-  .patch(
-    loginAuth,
-    adminAuth,
-    upload.single("image"),
-    trimBodyObject,
-    requiredFields(["name"]),
-    updateProduct
-  )
+  .patch(loginAuth, adminAuth, productUpload, trimBodyObject, updateProduct)
   .delete(loginAuth, adminAuth, deleteProduct);
 
 export { productRouter };

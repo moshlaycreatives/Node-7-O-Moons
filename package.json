@@ -19,6 +19,7 @@
   "homepage": "https://github.com/moshlaycreatives/Node-7-O-Moons#readme",
   "description": "",
   "dependencies": {
+    "authorizenet": "^1.0.9",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",

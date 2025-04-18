@@ -1,59 +1,59 @@
 import { Schema, model } from "mongoose";
 
-const productSchema = new Schema(
+const whitneyBlockSchema = new Schema(
   {
-    name: {
+    first_name: {
       type: String,
       default: "",
     },
 
-    category: {
+    last_name: {
       type: String,
       default: "",
     },
 
-    flavor: {
+    email: {
       type: String,
       default: "",
     },
 
-    stock: {
-      type: Number,
-      default: 0,
-    },
-
-    price: {
-      type: Number,
-      default: 0,
-    },
-
-    lab_test: {
+    str: {
       type: String,
       default: "",
     },
 
-    lab_test_image: {
+    city: {
       type: String,
       default: "",
     },
 
-    report: {
+    state: {
       type: String,
       default: "",
     },
 
-    images: [
-      {
-        type: String,
-      },
-    ],
-
-    color: {
+    zip_code: {
       type: String,
       default: "",
+    },
+
+    contact: {
+      type: String,
+      default: "",
+    },
+
+    note: {
+      type: String,
+      default: "",
+    },
+
+    customer: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
   },
   { timestamps: true }
 );
 
-export const Product = model("Product", productSchema);
+export const WhitneyBlock = model("WhitneyBlock", whitneyBlockSchema);

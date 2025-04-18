@@ -7,8 +7,17 @@ import { asyncHandler } from "../utils/asyncHandler.util.js";
 // 1. Add Product
 // ==============================================
 export const addProduct = asyncHandler(async (req, res) => {
-  if (req.file) {
-    req.body.image = process.env.BASE_URL + req.file.path.replace(/\\/g, "/");
+  // Handle images
+  if (req.files.images) {
+    req.body.images = req.files.images.map(
+      (file) => process.env.BASE_URL + file.path.replace(/\\/g, "/")
+    );
+  }
+
+  // Handle report
+  if (req.files.report) {
+    req.body.report =
+      process.env.BASE_URL + req.files.report[0].path.replace(/\\/g, "/");
   }
 
   const newProduct = await Product.create(req.body);
@@ -71,8 +80,17 @@ export const updateProduct = asyncHandler(async (req, res) => {
     throw new NotFoundException("Product is requried.");
   }
 
-  if (req.file) {
-    req.body.image = process.env.BASE_URL + req.file.path.replace(/\\/g, "/");
+  // Handle images
+  if (req.files.images) {
+    req.body.images = req.files.images.map(
+      (file) => process.env.BASE_URL + file.path.replace(/\\/g, "/")
+    );
+  }
+
+  // Handle report
+  if (req.files.report) {
+    req.body.report =
+      process.env.BASE_URL + req.files.report[0].path.replace(/\\/g, "/");
   }
 
   const updatedProduct = await Product.findOneAndUpdate({ _id: id }, req.body, {
