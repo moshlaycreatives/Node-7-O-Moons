@@ -5,95 +5,91 @@ import { BadRequestException, NotFoundException } from "../errors/index.js";
 import { Product } from "../models/product.model.js";
 
 // =========================================
-// 1. Add To Cart
+// 1. Add To Cart (Corrected)
 // =========================================
 export const addToCart = asyncHandler(async (req, res) => {
-  const product = await Product.findOne({
-    _id: req.body.products[0].product,
-  });
+  const { productId, quantity } = req.body;
+  if (!productId) throw new BadRequestException("Product ID is required.");
 
-  if (!product) {
-    throw new BadRequestException("Invalid product id.");
-  }
-  const existingCart = await Cart.findOne({
-    customer: req.userId,
-    status: "Pending",
-  });
+  const product = await Product.findById(productId);
+  if (!product) throw new NotFoundException("Product not found.");
 
-  if (existingCart) {
-    existingCart.products.push(req.body.products[0]);
+  const qty = quantity || 1;
+  if (qty < 1) throw new BadRequestException("Quantity must be at least 1.");
 
-    existingCart.subtotal += product.price * req.body.products[0].quantity;
-    await existingCart.save();
+  let cart = await Cart.findOne({ customer: req.userId, status: "Pending" });
+
+  if (cart) {
+    const existingProduct = cart.products.find((item) =>
+      item.product.equals(productId)
+    );
+
+    if (existingProduct) {
+      existingProduct.quantity += qty;
+    } else {
+      cart.products.push({ product: productId, quantity: qty });
+    }
+
+    cart.subtotal += product.price * qty;
   } else {
-    req.body.subtotal = product.price * req.body.products[0].quantity;
-    req.body.customer = req.userId;
-    await Cart.create(req.body);
+    cart = await Cart.create({
+      customer: req.userId,
+      products: [{ product: productId, quantity: qty }],
+      subtotal: product.price * qty,
+    });
   }
-  return res.status(200).json(
-    new ApiResponce({
-      statusCode: 200,
-      message: "Product added to cart.",
-    })
-  );
+
+  await cart.save();
+  return res
+    .status(200)
+    .json(new ApiResponce(200, "Product added to cart.", cart));
 });
 
 // =========================================
-// 2. Get All Carts
+// 2. Get All Carts (Corrected)
 // =========================================
 export const getAllCarts = asyncHandler(async (req, res) => {
-  const allCarts = await Cart.find({
+  const carts = await Cart.find({
     customer: req.userId,
     status: "Pending",
   }).populate("products.product");
 
-  res.status(200).json(
-    new ApiResponce({
-      statusCode: 200,
-      message:
-        allCarts.lenght > 0
-          ? "All Carts fetched successfully."
-          : "You cart collection is empty.",
-
-      data: allCarts,
-    })
-  );
+  res
+    .status(200)
+    .json(
+      new ApiResponce(
+        200,
+        carts.length > 0 ? "Cart fetched successfully." : "Your cart is empty.",
+        carts
+      )
+    );
 });
 
 // =========================================
-// 3. Remove Product From Cart
+// 3. Remove Product From Cart (Corrected)
 // =========================================
 export const removeCartProduct = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
   const cart = await Cart.findOne({ customer: req.userId, status: "Pending" });
+  if (!cart) throw new NotFoundException("Cart not found.");
 
-  if (!cart) {
-    throw new NotFoundException("You have no any cart.");
-  }
-
-  const isProductExists = cart.products.find(
-    (product) => product.product.toString() === req.body.productId
+  const productIndex = cart.products.findIndex((item) =>
+    item.product.equals(productId)
   );
+  if (productIndex === -1) throw new NotFoundException("Product not in cart.");
 
-  if (!isProductExists) {
-    throw new BadRequestException("Invalid product id.");
-  }
+  // Get product price before removal
+  const product = await Product.findById(productId);
+  const removedProduct = cart.products[productIndex];
+  cart.subtotal -= product.price * removedProduct.quantity;
 
-  const filteredProducts = cart.products.filter(
-    (product) => product.product.toString() !== req.body.productId
-  );
+  cart.products.splice(productIndex, 1);
 
-  cart.products = filteredProducts;
+  // If no products left, reset subtotal to 0
+  if (cart.products.length === 0) cart.subtotal = 0;
 
-  cart.products.forEach(async (product) => {
-    const findProduct = await Product.findOne({ _id: product.product });
-    cart.subtotal += product.quantity * findProduct.price;
-  });
   await cart.save();
-
-  res.status(200).json(
-    new ApiResponce({
-      statusCode: 200,
-      message: "Product removed from cart.",
-    })
-  );
+  return res
+    .status(200)
+    .json(new ApiResponce(200, "Product removed from cart.", cart));
 });
