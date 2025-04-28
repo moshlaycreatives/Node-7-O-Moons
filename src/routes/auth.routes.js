@@ -4,11 +4,15 @@ import {
   trimBodyObject,
   requiredFields,
   emailValidator,
+  loginAuth,
+  adminAuth,
 } from "../middlewares/index.js";
 
 import {
   forgotPassword,
+  getAllUsers,
   login,
+  manageUserBlock,
   register,
   resetPassword,
   verifyForgotPasswordOTP,
@@ -75,5 +79,22 @@ authRouter
     emailValidator,
     resetPassword
   );
+
+// ==============================================
+// 6. Manage user Block
+// ==============================================
+authRouter
+  .route("/manage-block/:id")
+  .patch(loginAuth, adminAuth, manageUserBlock);
+
+// ==============================================
+// 7. Get All Users
+// ==============================================
+authRouter.route("/").get(loginAuth, adminAuth, getAllUsers);
+
+// ==============================================
+// 8. Get User
+// ==============================================
+authRouter.route("/:id").get(loginAuth, getAllUsers);
 
 export { authRouter };

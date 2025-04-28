@@ -10,10 +10,10 @@ const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     let uploadPath = "public/uploads";
 
-    if (file.fieldname === "images") {
+    if (file.fieldname === "images" || file.fieldname === "image") {
       uploadPath = "public/images";
-    } else if (file.fieldname === "test_report") {
-      uploadPath = "public/reports";
+    } else if (file.fieldname === "pdf_url") {
+      uploadPath = "public/labtests";
     }
 
     if (!fs.existsSync(uploadPath)) {
@@ -26,7 +26,14 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     const ext = path.extname(file.originalname);
-    cb(null, `${file.fieldname}_${uniqueSuffix}${ext}`);
+    cb(
+      null,
+      `${
+        file.fieldname === "images" || file.fieldname === "image"
+          ? "image"
+          : "pdf"
+      }_${uniqueSuffix}${ext}`
+    );
   },
 });
 
@@ -36,17 +43,17 @@ const storage = multer.diskStorage({
 const fileFilter = (req, file, cb) => {
   const ext = path.extname(file.originalname).toLowerCase();
 
-  if (file.fieldname === "images") {
+  if (file.fieldname === "images" || file.fieldname === "image") {
     if (![".jpg", ".jpeg", ".png"].includes(ext)) {
       return cb(
         new BadRequestException("Only JPG, JPEG, and PNG images are allowed"),
         false
       );
     }
-  } else if (file.fieldname === "test_report") {
+  } else if (file.fieldname === "pdf_url") {
     if (ext !== ".pdf") {
       return cb(
-        new BadRequestException("Only PDF files are allowed for reports"),
+        new BadRequestException("Only PDF files are allowed for lab tests"),
         false
       );
     }
@@ -55,15 +62,7 @@ const fileFilter = (req, file, cb) => {
   cb(null, true);
 };
 
-const upload = multer({
+export const upload = multer({
   storage,
   fileFilter,
 });
-
-// =============================================
-// Handle multiple fields in single form
-// =============================================
-export const productUpload = upload.fields([
-  { name: "images", maxCount: 3 },
-  { name: "report", maxCount: 1 },
-]);

@@ -3,6 +3,10 @@ import { authRouter } from "./auth.routes.js";
 import { productRouter } from "./product.routes.js";
 import { paymentRouter } from "./payment.routes.js";
 import { whitneyBlockRouter } from "./whitneyBlock.routes.js";
+import { loginAuth } from "../middlewares/loginAuth.middleware.js";
+import { cartRouter } from "./cart.routes.js";
+import { labTestRouter } from "./labTest.routes.js";
+import { orderRouter } from "./order.routes.js";
 
 const router = Router();
 
@@ -25,5 +29,20 @@ router.use("/payment", paymentRouter);
 // 4. Whitney Block Routes
 // ==============================================
 router.use("/whitney-block", whitneyBlockRouter);
+
+// ==============================================
+// 5. Cart Routes
+// ==============================================
+router.use("/cart", loginAuth, cartRouter);
+
+// ==============================================
+// 6. Cart Routes
+// ==============================================
+router.use("/labtest", labTestRouter);
+
+// ==============================================
+// 7. Order Routes
+// ==============================================
+router.use("/order", orderRouter);
 
 export { router };

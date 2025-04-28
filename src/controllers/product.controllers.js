@@ -14,6 +14,12 @@ export const addProduct = asyncHandler(async (req, res) => {
     );
   }
 
+  // Handle lab_test_image
+  if (req.files.lab_test_image) {
+    req.body.lab_test_image =
+      process.env.BASE_URL + req.files.report[0].path.replace(/\\/g, "/");
+  }
+
   // Handle report
   if (req.files.report) {
     req.body.report =
@@ -35,7 +41,7 @@ export const addProduct = asyncHandler(async (req, res) => {
 // 2. Get All Products
 // ==============================================
 export const getAllProducts = asyncHandler(async (req, res) => {
-  const allProducts = await Product.find({});
+  const allProducts = await Product.find({}).populate("labtest");
 
   return res.status(200).json(
     new ApiResponce({
@@ -55,7 +61,7 @@ export const getAllProducts = asyncHandler(async (req, res) => {
 export const getProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const product = await Product.findById(id);
+  const product = await Product.findById(id).populate("labtest");
 
   if (!product) {
     throw new NotFoundException("Product not found.");

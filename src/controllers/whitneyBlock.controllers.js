@@ -17,9 +17,7 @@ export const addWhitneyBlock = asyncHandler(async (req, res) => {
 
   const whitneyBlock = await WhitneyBlock.findOne({
     _id: newWhitneyBlock._id,
-  })
-    .populate("customer")
-    .select("-customer.password");
+  }).populate({ path: "customer", select: "-password" });
   return res.status(201).json(
     new ApiResponce({
       statusCode: 201,
@@ -35,7 +33,10 @@ export const addWhitneyBlock = asyncHandler(async (req, res) => {
 export const getWhitneyBlock = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const whitneyBlock = await WhitneyBlock.findById(id);
+  const whitneyBlock = await WhitneyBlock.findById(id).populate({
+    path: "customer",
+    select: "-password",
+  });
 
   if (!whitneyBlock) {
     throw new BadRequestException("Whitney block not found.");

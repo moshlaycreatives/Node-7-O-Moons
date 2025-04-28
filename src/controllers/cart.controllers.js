@@ -1,7 +1,7 @@
 import { Cart } from "../models/cart.model.js";
 import { ApiResponce } from "../utils/apiResponce.util.js";
 import { asyncHandler } from "../utils/asyncHandler.util.js";
-import { BadRequestException, NotFoundException } from "../errors/index.js";
+import { NotFoundException } from "../errors/index.js";
 import { Product } from "../models/product.model.js";
 
 // =========================================
@@ -9,13 +9,11 @@ import { Product } from "../models/product.model.js";
 // =========================================
 export const addToCart = asyncHandler(async (req, res) => {
   const { productId, quantity } = req.body;
-  if (!productId) throw new BadRequestException("Product ID is required.");
+
+  const qty = quantity || 1;
 
   const product = await Product.findById(productId);
   if (!product) throw new NotFoundException("Product not found.");
-
-  const qty = quantity || 1;
-  if (qty < 1) throw new BadRequestException("Quantity must be at least 1.");
 
   let cart = await Cart.findOne({ customer: req.userId, status: "Pending" });
 
@@ -40,29 +38,32 @@ export const addToCart = asyncHandler(async (req, res) => {
   }
 
   await cart.save();
-  return res
-    .status(200)
-    .json(new ApiResponce(200, "Product added to cart.", cart));
+  return res.status(200).json(
+    new ApiResponce({
+      statusCode: 200,
+      message: "Product added to cart.",
+      data: cart,
+    })
+  );
 });
 
 // =========================================
 // 2. Get All Carts (Corrected)
 // =========================================
-export const getAllCarts = asyncHandler(async (req, res) => {
+export const getCart = asyncHandler(async (req, res) => {
   const carts = await Cart.find({
     customer: req.userId,
     status: "Pending",
   }).populate("products.product");
 
-  res
-    .status(200)
-    .json(
-      new ApiResponce(
-        200,
+  res.status(200).json(
+    new ApiResponce({
+      statusCode: 200,
+      message:
         carts.length > 0 ? "Cart fetched successfully." : "Your cart is empty.",
-        carts
-      )
-    );
+      data: carts,
+    })
+  );
 });
 
 // =========================================
@@ -91,5 +92,11 @@ export const removeCartProduct = asyncHandler(async (req, res) => {
   await cart.save();
   return res
     .status(200)
-    .json(new ApiResponce(200, "Product removed from cart.", cart));
+    .json(
+      new ApiResponce({
+        statusCode: 200,
+        message: "Product removed from cart.",
+        data: cart,
+      })
+    );
 });

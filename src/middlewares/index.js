@@ -5,4 +5,4 @@ export { requiredFields } from "./requiredFields.middleware.js";
 export { emailValidator } from "./emailValidation.middleware.js";
 export { loginAuth } from "./loginAuth.middleware.js";
 export { adminAuth } from "./adminAuth.middleware.js";
-export { productUpload } from "./upload.middleware.js";
+export { upload } from "./upload.middleware.js";

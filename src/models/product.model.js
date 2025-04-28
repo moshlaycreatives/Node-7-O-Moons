@@ -27,21 +27,6 @@ const productSchema = new Schema(
       default: 0,
     },
 
-    lab_test: {
-      type: String,
-      default: "",
-    },
-
-    lab_test_image: {
-      type: String,
-      default: "",
-    },
-
-    report: {
-      type: String,
-      default: "",
-    },
-
     images: [
       {
         type: String,
@@ -51,6 +36,12 @@ const productSchema = new Schema(
     color: {
       type: String,
       default: "",
+    },
+
+    labtest: {
+      type: Schema.Types.ObjectId,
+      ref: "LabTest",
+      required: true,
     },
   },
   { timestamps: true }

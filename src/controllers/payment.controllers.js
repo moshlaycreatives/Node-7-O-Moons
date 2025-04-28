@@ -1,4 +1,5 @@
-import { APIContracts, APIControllers } from "authorizenet";
+import authorizenet from "authorizenet";
+const { APIContracts, APIControllers } = authorizenet;
 import { asyncHandler } from "../utils/asyncHandler.util.js";
 import { ApiResponce } from "../utils/apiResponce.util.js";
 import {

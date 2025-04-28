@@ -45,6 +45,16 @@ const userSchema = new Schema(
       type: String,
       enum: ["Block", "Unblock"],
     },
+
+    state: {
+      type: String,
+      default: "",
+    },
+
+    block: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

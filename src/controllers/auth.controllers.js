@@ -45,6 +45,10 @@ export const login = asyncHandler(async (req, res) => {
     throw new NotFoundException("User not found.");
   }
 
+  if (user.block) {
+    throw new BadRequestException("User is blocked.");
+  }
+
   const forgotPasswordCheck = await ForgotPassword.findOne({ email });
   if (forgotPasswordCheck) {
     throw new UnProcessableException("Please reset your password.");
@@ -166,6 +170,67 @@ export const resetPassword = asyncHandler(async (req, res) => {
     new ApiResponce({
       statusCode: 200,
       message: "Password reset successfully.",
+    })
+  );
+});
+
+// ==============================================
+// 5. Block User
+// ==============================================
+export const manageUserBlock = asyncHandler(async (req, res) => {
+  const findUser = await User.findOne({ _id: req.params.id });
+
+  if (!findUser) {
+    throw new NotFoundException("User not found.");
+  }
+
+  findUser.block = !findUser.block;
+
+  await findUser.save();
+
+  return res.status(200).json(
+    new ApiResponce({
+      statusCode: 200,
+      message: findUser.block
+        ? "User blocked successfully."
+        : "User unblocked successfully.",
+    })
+  );
+});
+
+// ==============================================
+// 6. Get All Users
+// ==============================================
+export const getAllUsers = asyncHandler(async (req, res) => {
+  const allUsers = await User.find({ role: { $ne: "admin" } });
+
+  return res.status(200).json(
+    new ApiResponce({
+      statusCode: 200,
+      message:
+        allUsers.length > 0
+          ? "Users fetched successfully."
+          : "There is no any user register.",
+      data: allUsers,
+    })
+  );
+});
+
+// ==============================================
+// 7. Get User
+// ==============================================
+export const getUser = asyncHandler(async (req, res) => {
+  const user = await User.findOne({ _id: req.params.id }).select("-password");
+
+  if (!user) {
+    throw new NotFoundException("User not found.");
+  }
+
+  return res.status(200).json(
+    new ApiResponce({
+      statusCode: 200,
+      message: "User fetched successfully.",
+      data: user,
     })
   );
 });
