@@ -7,6 +7,7 @@ import { loginAuth } from "../middlewares/loginAuth.middleware.js";
 import { cartRouter } from "./cart.routes.js";
 import { labTestRouter } from "./labTest.routes.js";
 import { orderRouter } from "./order.routes.js";
+import { contactUsRouter } from "./contactUs.routes.js";
 
 const router = Router();
 
@@ -44,5 +45,10 @@ router.use("/labtest", labTestRouter);
 // 7. Order Routes
 // ==============================================
 router.use("/order", orderRouter);
+
+// ==============================================
+// 8. Contact Us Routes
+// ==============================================
+router.use("/contact-us", contactUsRouter);
 
 export { router };
