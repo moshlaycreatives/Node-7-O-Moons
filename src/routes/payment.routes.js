@@ -4,6 +4,9 @@ import { requiredFields, trimBodyObject } from "../middlewares/index.js";
 
 const paymentRouter = Router();
 
+// ==============================================
+// 1. Charge Amount
+// ==============================================
 paymentRouter
   .route("/")
   .post(

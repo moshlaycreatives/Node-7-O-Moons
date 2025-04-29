@@ -8,6 +8,7 @@ import { cartRouter } from "./cart.routes.js";
 import { labTestRouter } from "./labTest.routes.js";
 import { orderRouter } from "./order.routes.js";
 import { contactUsRouter } from "./contactUs.routes.js";
+import { dashboardRouter } from "./dashboard.routes.js";
 
 const router = Router();
 
@@ -50,5 +51,10 @@ router.use("/order", orderRouter);
 // 8. Contact Us Routes
 // ==============================================
 router.use("/contact-us", contactUsRouter);
+
+// ==============================================
+// 9. Dashboard Routes
+// ==============================================
+router.use("/dashboard", dashboardRouter);
 
 export { router };
